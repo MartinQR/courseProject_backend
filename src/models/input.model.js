@@ -7,6 +7,10 @@ module.exports = (sequelize) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
     label: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -16,11 +20,20 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM('text', 'number', 'email', 'date', 'textarea', 'select', 'checkbox', 'radio'),
+      type: DataTypes.ENUM(
+        'text',
+        'number',
+        'email',
+        'date',
+        'textarea',
+        'select',
+        'checkbox',
+        'radio'
+      ),
       allowNull: false,
     },
     values: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+      type: DataTypes.JSON,
     },
     isRequired: {
       type: DataTypes.BOOLEAN,
@@ -30,10 +43,5 @@ module.exports = (sequelize) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    createdBy: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
-
   });
 }

@@ -15,12 +15,19 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    userId: {
-      type: DataTypes.UUID,
+    topic: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     collaboratorIds: {
-      type: DataTypes.ARRAY(DataTypes.UUID),
+      type: DataTypes.JSON,
+    },
+    tags: {
+      type: DataTypes.JSON,
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
     },
   });
 }
