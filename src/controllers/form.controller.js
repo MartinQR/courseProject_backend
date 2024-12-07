@@ -1,5 +1,5 @@
 const sequelize = require("../db");
-const { Form, Input } = sequelize.models;
+const { Form, Input, Tag } = sequelize.models;
 const { createInput } = require("./input.controller");
 
 
@@ -52,7 +52,7 @@ const createForm = async ({
 };
 
 
-const getForm = async (id) => {
+const getFormById = async (id) => {
   try {
     const form = await Form.findByPk(id, {
       include: [
@@ -69,8 +69,30 @@ const getForm = async (id) => {
   }
 };
 
+const getFormByUserId = async (userId) => {
+  try {
+    const forms = await Form.findAll({
+      where: {
+        userId,
+      },
+      include: [
+        {
+          model: Input,
+          as: "inputs",
+        },
+      ],
+    });
+
+    return forms;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   getAllForms,
   createForm,
-  getForm,
+  getFormById,
+  getFormByUserId
 };

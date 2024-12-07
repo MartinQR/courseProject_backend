@@ -3,6 +3,7 @@ const modelSetup = (sequelize) => {
     User,
     Form,
     Input,
+    Tag,
   } = sequelize.models;
 
   User.hasMany(Form, { foreignKey: 'userId' });
@@ -13,6 +14,7 @@ const modelSetup = (sequelize) => {
 
   User.hasMany(Input, { foreignKey: 'userId' });
   Input.belongsTo(User, { foreignKey: 'userId' });
+
 
 };
 
