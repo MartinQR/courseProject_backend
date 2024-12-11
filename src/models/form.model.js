@@ -15,8 +15,8 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    topic: {
-      type: DataTypes.STRING,
+    topicId: {
+      type: DataTypes.UUID,
       allowNull: false,
     },
     collaboratorIds: {
@@ -24,6 +24,14 @@ module.exports = (sequelize) => {
     },
     tags: {
       type: DataTypes.JSON,
+    },
+    allowedUsers: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    },
+    isPublic: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
     userId: {
       type: DataTypes.UUID,

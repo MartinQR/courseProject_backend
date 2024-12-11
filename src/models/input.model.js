@@ -11,24 +11,20 @@ module.exports = (sequelize) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    label: {
+    title: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    placeholder: {
+    description: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     type: {
       type: DataTypes.ENUM(
-        'text',
-        'number',
-        'email',
-        'date',
-        'textarea',
-        'select',
-        'checkbox',
-        'radio'
+        'SINGLE-LINE',
+        'MULTIPLE-LINE',
+        'INTEGER',
+        'CHECKBOX',
       ),
       allowNull: false,
     },
@@ -38,6 +34,12 @@ module.exports = (sequelize) => {
     isRequired: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
+    },
+    display: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
     formId: {
       type: DataTypes.UUID,

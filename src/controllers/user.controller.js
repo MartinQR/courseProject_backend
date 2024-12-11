@@ -1,4 +1,5 @@
 const sequelize = require("../db");
+const bcrypt = require("bcrypt");
 const User = sequelize.models.User;
 
 
@@ -20,13 +21,38 @@ const createUser = async ({
 }) => {
 
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     await User.sync();
     const user = await User.create({
       firstName,
       lastName,
       email,
-      password,
+      password: hashedPassword,
     });
+    return user;
+
+  } catch (error) {
+
+    if (error.parent.code === "ER_DUP_ENTRY") {
+      throw new Error("Email already exists");
+    }
+    throw new Error(error);
+  }
+};
+
+const loginUser = async ({ email, password }) => {
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      throw new Error("Invalid email or password");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Invalid email or password");
+    }
+
     return user;
 
   } catch (error) {
@@ -36,5 +62,6 @@ const createUser = async ({
 
 module.exports = {
   createUser,
+  loginUser,
   getAllUsers,
 }

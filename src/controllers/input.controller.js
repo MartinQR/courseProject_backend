@@ -14,26 +14,32 @@ const getAllInput = async () => {
 
 const createInput = async ({
   userId,
-  label,
-  placeholder,
+  title,
+  description,
   type,
   values,
   isRequired,
   formId,
+  display,
 }) => {
 
   try {
+
     await Input.sync();
-    const user = await Input.create({
-      userId,
-      label,
-      placeholder,
-      type,
-      values,
-      isRequired,
-      formId,
+    const response = await sequelize.transaction(async (transaction) => {
+      const input = await Input.create({
+        userId,
+        title,
+        description,
+        type,
+        values,
+        isRequired,
+        formId,
+        display,
+      }, { transaction });
+
+      return input;
     });
-    return user;
 
   } catch (error) {
     throw error;

@@ -30,6 +30,17 @@ router.post("/user", async (req, res) => {
 
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const user = await userController.loginUser(req.body);
+
+    return res.json(user);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.post("/form", async (req, res) => {
   try {
     const form = await formController.createForm(req.body);
@@ -64,9 +75,5 @@ router.get("/formByUserId", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
-
-
-
 
 module.exports = router;

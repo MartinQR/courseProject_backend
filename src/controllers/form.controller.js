@@ -1,6 +1,7 @@
 const sequelize = require("../db");
 const { Form, Input, Tag } = sequelize.models;
 const { createInput } = require("./input.controller");
+const { createTag } = require("./tag.controller");
 
 
 const getAllForms = async () => {
@@ -16,35 +17,56 @@ const getAllForms = async () => {
 const createForm = async ({
   title,
   description,
-  topic,
+  topicId,
   collaboratorIds,
   tags,
   inputs,
   userId,
+  isPublic,
+  allowedUsers = [],
 }) => {
 
   try {
-    await Form.sync();
-    const form = await Form.create({
-      title,
-      description,
-      topic,
-      collaboratorIds,
-      tags,
-      userId,
-    });
 
-    if (inputs.length) {
-      for await (const input of inputs) {
-        await createInput({
+    if (tags.length > 10) {
+      throw new Error("Tags should not exceed 10");
+    }
+
+    const response = await sequelize.transaction(async (transaction) => {
+      const form = await Form.create({
+        title,
+        description,
+        topicId,
+        collaboratorIds,
+        tags,
+        isPublic,
+        allowedUsers,
+        userId,
+      }, { transaction });
+
+      if (inputs.length) {
+        const inputsData = inputs.map(input => ({
           ...input,
           userId,
           formId: form.id,
-        });
-      }
-    }
+        }));
 
-    return form;
+        await Input.sync();
+        await Input.bulkCreate(inputsData, { transaction });
+      }
+
+      if (tags.length) {
+        for await (const tag of tags) {
+          await createTag({
+            name: tag,
+          });
+        }
+      }
+
+      return form;
+    });
+
+    return response;
 
   } catch (error) {
     throw error;
@@ -89,6 +111,9 @@ const getFormByUserId = async (userId) => {
     throw error;
   }
 };
+
+
+
 
 module.exports = {
   getAllForms,

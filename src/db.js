@@ -24,6 +24,9 @@ const modelDefiners = [
   require("./models/form.model"),
   require("./models/input.model"),
   require("./models/tag.model"),
+  require("./models/answer.model"),
+  require("./models/formResponse.model"),
+  require("./models/topic.model"),
 ];
 
 for (const modelDefiner of modelDefiners) {
@@ -31,6 +34,16 @@ for (const modelDefiner of modelDefiners) {
 }
 
 modelSetup(sequelize);
+
+// This will create the table if it doesn't exist (and will do nothing if it already exists)
+
+(async () => {
+  try {
+    await sequelize.sync({ alter: true });
+  } catch (error) {
+    console.error(error.message);
+  }
+})();
 
 
 module.exports = sequelize;
