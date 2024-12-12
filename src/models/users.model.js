@@ -24,5 +24,13 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isBlocked: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   });
 };
