@@ -18,8 +18,8 @@ const createForm = async ({
   title,
   description,
   topicId,
-  collaboratorIds,
-  tags,
+  collaboratorIds = [],
+  tags = [],
   inputs,
   userId,
   isPublic,
@@ -44,8 +44,8 @@ const createForm = async ({
         userId,
       }, { transaction });
 
-      if (inputs.length) {
-        const inputsData = inputs.map(input => ({
+      if (inputs?.length) {
+        const inputsData = inputs?.map(input => ({
           ...input,
           userId,
           formId: form.id,
@@ -55,10 +55,11 @@ const createForm = async ({
         await Input.bulkCreate(inputsData, { transaction });
       }
 
-      if (tags.length) {
+      if (tags?.length) {
         for await (const tag of tags) {
           await createTag({
             name: tag,
+            userId,
           });
         }
       }
