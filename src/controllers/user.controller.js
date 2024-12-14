@@ -34,7 +34,7 @@ const createUser = async ({
 
   } catch (error) {
 
-    if (error.parent.code === "ER_DUP_ENTRY") {
+    if (error?.parent?.code === "ER_DUP_ENTRY") {
       throw new Error("Email already exists");
     }
     throw new Error(error);
@@ -53,26 +53,45 @@ const loginUser = async ({ email, password }) => {
       throw new Error("Invalid email or password");
     }
 
-    return user;
+    // Exclude password, createdAt and updatedAt from the returned user object
+    const {
+      password: _,
+      createdAt,
+      updatedAt,
+      ...userWithoutPassword
+    } = user.toJSON();
+
+    return userWithoutPassword;
 
   } catch (error) {
     throw error;
   }
 };
 
-const deleteUser = async ({ adminId, userId }) => {
+const deleteUser = async ({ adminId, usersId }) => {
   try {
     const admin = await User.findOne({ where: { id: adminId } });
     if (!admin) {
       throw new Error("Admin not found");
     }
 
-    if (!admin.isAdmin) {
-      throw new Error("You are not authorized to delete a user");
+    for await (const userId of usersId) {
+      const user = await User.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new Error(`User with id ${userId} not found`);
+      }
+
+      if (user.isAdmin && user.id !== adminId) {
+        throw new Error(`You cannot delete an admin ${user.email}`);
+      }
+
+      await user.destroy();
     }
 
-    const user = await User.destroy({ where: { id: userId } });
-    return user;
+    return { message: "Users deleted successfully" };
+
+
   } catch (error) {
     throw error;
   }
@@ -107,7 +126,9 @@ const updateUser = async ({
   }
 };
 
-const updateAdminStatus = async ({ adminId, userId }) => {
+const updateAdminStatus = async ({ adminId, usersId, action }) => {
+  const isAdmin = action === "MAKE";
+
   try {
     const admin = await User.findOne({ where: { id: adminId } });
     if (!admin) {
@@ -118,24 +139,31 @@ const updateAdminStatus = async ({ adminId, userId }) => {
       throw new Error("You are not authorized to update admin status");
     }
 
-    const user = await User.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new Error("User not found");
+    for await (const userId of usersId) {
+      const user = await User.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new Error(`User with id ${userId} not found`);
+      }
+
+      if (user.isAdmin && user.id !== adminId) {
+        throw new Error(`You cannot update an admin ${user.email}`);
+      }
+
+      await user.update({ isAdmin });
     }
 
-    if (user.isAdmin && adminId !== userId) {
-      throw new Error("You cannot update admin status of another admin");
-    }
-
-    await user.update({ isAdmin: !user.isAdmin });
-    return user;
+    return { message: "Admin status updated successfully" };
 
   } catch (error) {
     throw error;
   }
 };
 
-const updateBlockedStatus = async ({ adminId, userId }) => {
+const updateBlockedStatus = async ({ adminId, usersId, action }) => {
+
+  const isBlocked = action === "BLOCK_USERS";
+
   try {
     const admin = await User.findOne({ where: { id: adminId } });
     if (!admin) {
@@ -146,17 +174,21 @@ const updateBlockedStatus = async ({ adminId, userId }) => {
       throw new Error("You are not authorized to update blocked status");
     }
 
-    const user = await User.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new Error("User not found");
+    for await (const userId of usersId) {
+      const user = await User.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new Error(`User with id ${userId} not found`);
+      }
+
+      if (user.isAdmin && user.id !== adminId) {
+        throw new Error(`You cannot block an admin ${user.email}`);
+      }
+
+      await user.update({ isBlocked });
     }
 
-    if (user.isAdmin && adminId !== userId) {
-      throw new Error("You cannot update blocked status of another admin");
-    }
-
-    await user.update({ isBlocked: !user.isBlocked });
-    return user;
+    return { message: "Blocked status updated successfully" };
 
   } catch (error) {
     throw error;

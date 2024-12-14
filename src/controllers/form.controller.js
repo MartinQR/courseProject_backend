@@ -1,5 +1,5 @@
 const sequelize = require("../db");
-const { Form, Input, Tag } = sequelize.models;
+const { Form, Input, Tag, Comment } = sequelize.models;
 const { createInput } = require("./input.controller");
 const { createTag } = require("./tag.controller");
 
@@ -113,6 +113,21 @@ const getFormByUserId = async (userId) => {
   }
 };
 
+const getFormComments = async (formId) => {
+  try {
+    const comments = await Comment.findAll({
+      where: {
+        formId,
+      },
+    });
+
+    return comments;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 
@@ -120,5 +135,6 @@ module.exports = {
   getAllForms,
   createForm,
   getFormById,
-  getFormByUserId
+  getFormByUserId,
+  getFormComments,
 };
