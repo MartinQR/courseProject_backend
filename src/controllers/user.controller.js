@@ -21,13 +21,18 @@ const createUser = async ({
 }) => {
 
   try {
+
+    if (!firstName?.trim() || !lastName?.trim() || !email?.trim() || !password) {
+      throw new Error("Please provide all required fields");
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.sync();
     const user = await User.create({
-      firstName,
-      lastName,
-      email,
+      firstName: firstName?.trim(),
+      lastName: lastName?.trim(),
+      email: email?.trim(),
       password: hashedPassword,
     });
     return user;

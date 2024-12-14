@@ -36,4 +36,67 @@ router.get("/getFormByUserId", async (req, res) => {
   }
 });
 
+router.get("/getFormComments", async (req, res) => {
+  try {
+    const formId = req.body.formId;
+    const comments = await formController.getFormComments(formId);
+
+    return res.json(comments);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/getFormLikesCount", async (req, res) => {
+  try {
+    const formId = req.body.formId;
+    const likesCount = await formController.getFormLikesCount(formId);
+
+    return res.json(likesCount);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
+router.post("/likeForm", async (req, res) => {
+  try {
+    const { userId, formId } = req.body;
+    const like = await formController.likeForm({ userId, formId });
+
+    return res.json(like);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/unlikeForm", async (req, res) => {
+  try {
+    const { userId, formId } = req.body;
+    const like = await formController.unlikeForm({ userId, formId });
+
+    return res.json(like);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/commentForm", async (req, res) => {
+  try {
+    const { userId, formId, content } = req.body;
+    const comment = await formController.commentForm({ userId, formId, content });
+
+    return res.json(comment);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+
+
 module.exports = router;

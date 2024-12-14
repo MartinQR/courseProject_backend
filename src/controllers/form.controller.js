@@ -1,7 +1,14 @@
 const sequelize = require("../db");
-const { Form, Input, Tag, Comment } = sequelize.models;
-const { createInput } = require("./input.controller");
-const { createTag } = require("./tag.controller");
+const {
+  Form,
+  Input,
+  Tag,
+  Comment,
+  Like,
+  User,
+} = sequelize.models;
+const tagController = require("./tag.controller");
+const commentController = require("./comment.controller");
 
 
 const getAllForms = async () => {
@@ -57,7 +64,7 @@ const createForm = async ({
 
       if (tags?.length) {
         for await (const tag of tags) {
-          await createTag({
+          await tagController.createTag({
             name: tag,
             userId,
           });
@@ -73,7 +80,6 @@ const createForm = async ({
     throw error;
   }
 };
-
 
 const getFormById = async (id) => {
   try {
@@ -128,6 +134,123 @@ const getFormComments = async (formId) => {
   }
 };
 
+const getFormLikesCount = async (formId) => {
+  try {
+    const likes = await Like.count({
+      where: {
+        formId,
+      },
+    });
+
+    return likes;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+const likeForm = async (formId, userId) => {
+  try {
+    const form = await Form.findByPk(formId);
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const existingLike = await Like.findOne({
+      where: {
+        formId,
+        userId,
+      },
+    });
+
+    if (existingLike) {
+      throw new Error("You have already liked this form");
+    }
+
+    const like = await Like.create({
+      formId,
+      userId,
+    });
+
+    return like;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+const unlikeForm = async (formId, userId) => {
+  try {
+    const form = await Form.findByPk(formId);
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const existingLike = await Like.findOne({
+      where: {
+        formId,
+        userId,
+      },
+    });
+
+    if (!existingLike) {
+      throw new Error("You have not liked this form");
+    }
+
+    await existingLike.destroy();
+
+    return { message: "Form unliked successfully" };
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+const commentForm = async (formId, userId, content) => {
+  try {
+    const form = await Form.findByPk(formId);
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (!content || !content.trim()) {
+      throw new Error("Content is required");
+    }
+
+    const newComment = await commentController.createComment({
+      userId,
+      formId,
+      content,
+    });
+
+    return newComment;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 
@@ -137,4 +260,8 @@ module.exports = {
   getFormById,
   getFormByUserId,
   getFormComments,
+  getFormLikesCount,
+  likeForm,
+  unlikeForm,
+  commentForm,
 };

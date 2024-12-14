@@ -21,6 +21,10 @@ const createComment = async ({
       throw new Error("Form not found");
     }
 
+    if (!content?.trim()) {
+      throw new Error("Please provide a comment");
+    }
+
     const comment = await Comment.create({
       userId,
       formId,
@@ -35,5 +39,4 @@ const createComment = async ({
 
 module.exports = {
   createComment,
-  getAllComments,
 };
