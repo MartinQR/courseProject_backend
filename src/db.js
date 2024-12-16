@@ -39,13 +39,13 @@ modelSetup(sequelize);
 
 // This will create the table if it doesn't exist (and will do nothing if it already exists)
 
-// (async () => {
-//   try {
-//     await sequelize.sync({ alter: true });
-//   } catch (error) {
-//     console.error(error.message);
-//   }
-// })();
+(async () => {
+  try {
+    await sequelize.sync({ alter: true });
+  } catch (error) {
+    console.error(error.message);
+  }
+})();
 
 
 module.exports = sequelize;

@@ -24,10 +24,10 @@ router.get("/getFormById", async (req, res) => {
   }
 });
 
-router.get("/getFormByUserId", async (req, res) => {
+router.get("/getFormsByUserId", async (req, res) => {
   try {
     const userId = req.body.userId;
-    const forms = await formController.getFormByUserId(userId);
+    const forms = await formController.getFormsByUserId(userId);
 
     return res.json(forms);
 
@@ -59,7 +59,6 @@ router.get("/getFormLikesCount", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
 
 router.post("/likeForm", async (req, res) => {
   try {

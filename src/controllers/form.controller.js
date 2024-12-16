@@ -10,31 +10,19 @@ const {
 const tagController = require("./tag.controller");
 const commentController = require("./comment.controller");
 
-
-const getAllForms = async () => {
-  try {
-    const forms = await Form.findAll();
-    return forms;
-
-  } catch (error) {
-    throw error;
-  }
-};
-
 const createForm = async ({
   title,
   description,
   topicId,
   collaboratorIds = [],
   tags = [],
-  inputs,
+  inputsData,
   userId,
   isPublic,
   allowedUsers = [],
 }) => {
 
   try {
-
     if (tags.length > 10) {
       throw new Error("Tags should not exceed 10");
     }
@@ -51,15 +39,17 @@ const createForm = async ({
         userId,
       }, { transaction });
 
-      if (inputs?.length) {
-        const inputsData = inputs?.map(input => ({
+      if (inputsData?.length) {
+        const inputs = inputsData?.map(input => ({
           ...input,
+          values: input.options,
+          display: input.displayed,
           userId,
           formId: form.id,
         }));
 
         await Input.sync();
-        await Input.bulkCreate(inputsData, { transaction });
+        await Input.bulkCreate(inputs, { transaction });
       }
 
       if (tags?.length) {
@@ -89,6 +79,11 @@ const getFormById = async (id) => {
           model: Input,
           as: "inputs",
         },
+        {
+          model: User,
+          as: "user",
+          attributes: ["firstName", "lastName", "email"],
+        },
       ],
     });
     return form;
@@ -98,18 +93,20 @@ const getFormById = async (id) => {
   }
 };
 
-const getFormByUserId = async (userId) => {
+const getFormsByUserId = async (userId) => {
   try {
     const forms = await Form.findAll({
+      attributes: ["id", "title", "description", "createdAt"],
       where: {
         userId,
       },
-      include: [
-        {
-          model: Input,
-          as: "inputs",
-        },
-      ],
+      // include: [
+      //   {
+      //     model: User,
+      //     as: "user",
+      //     attributes: ["id", "firstName", "lastName"],
+      //   },
+      // ],
     });
 
     return forms;
@@ -255,10 +252,9 @@ const commentForm = async (formId, userId, content) => {
 
 
 module.exports = {
-  getAllForms,
   createForm,
   getFormById,
-  getFormByUserId,
+  getFormsByUserId,
   getFormComments,
   getFormLikesCount,
   likeForm,

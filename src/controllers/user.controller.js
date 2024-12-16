@@ -102,34 +102,6 @@ const deleteUser = async ({ adminId, usersId }) => {
   }
 };
 
-const updateUser = async ({
-  userId,
-  firstName,
-  lastName,
-  email,
-  password,
-}) => {
-  try {
-    const user = await User.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await user.update({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-    });
-
-    return user;
-
-  } catch (error) {
-    throw error;
-  }
-};
 
 const updateAdminStatus = async ({ adminId, usersId, action }) => {
   const isAdmin = action === "MAKE";
@@ -205,7 +177,6 @@ module.exports = {
   loginUser,
   getAllUsers,
   deleteUser,
-  updateUser,
   updateAdminStatus,
   updateBlockedStatus,
 };
