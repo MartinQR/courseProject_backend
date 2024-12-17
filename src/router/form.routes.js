@@ -14,7 +14,7 @@ router.post("/create", async (req, res) => {
 
 router.get("/getFormById", async (req, res) => {
   try {
-    const formId = req.body.id;
+    const formId = req.query.id;
     const form = await formController.getFormById(formId);
 
     return res.json(form);
@@ -26,7 +26,7 @@ router.get("/getFormById", async (req, res) => {
 
 router.get("/getFormsByUserId", async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.query.userId;
     const forms = await formController.getFormsByUserId(userId);
 
     return res.json(forms);

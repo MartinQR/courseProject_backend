@@ -6,6 +6,7 @@ const {
   Comment,
   Like,
   User,
+  Topic,
 } = sequelize.models;
 const tagController = require("./tag.controller");
 const commentController = require("./comment.controller");
@@ -78,14 +79,26 @@ const getFormById = async (id) => {
         {
           model: Input,
           as: "inputs",
+          attributes: {
+            exclude: ["formId", "createdAt", "updatedAt", "userId"],
+          },
         },
         {
           model: User,
           as: "user",
           attributes: ["firstName", "lastName", "email"],
         },
+        {
+          model: Topic,
+          as: "topic",
+          attributes: ["name"],
+        }
       ],
+      attributes: {
+        exclude: ["topicId"],
+      },
     });
+
     return form;
 
   } catch (error) {
@@ -100,13 +113,6 @@ const getFormsByUserId = async (userId) => {
       where: {
         userId,
       },
-      // include: [
-      //   {
-      //     model: User,
-      //     as: "user",
-      //     attributes: ["id", "firstName", "lastName"],
-      //   },
-      // ],
     });
 
     return forms;

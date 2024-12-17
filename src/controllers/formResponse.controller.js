@@ -42,11 +42,11 @@ const completeForm = async (formId, userId, answers) => {
         formId,
       }));
 
+      await Answers.sync();
       const answersCreated = await Answers.bulkCreate(answersToBulkCreate, { transaction });
 
       return answersCreated;
     });
-
 
     return response;
 
