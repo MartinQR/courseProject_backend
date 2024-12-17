@@ -96,6 +96,17 @@ router.post("/commentForm", async (req, res) => {
   }
 });
 
+router.get("/getLastFivePublicForms", async (req, res) => {
+  try {
+    const forms = await formController.getLastFivePublicForms();
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 
 
 module.exports = router;

@@ -254,6 +254,35 @@ const commentForm = async (formId, userId, content) => {
   }
 };
 
+const getLastFivePublicForms = async () => {
+  try {
+    const forms = await Form.findAll({
+      where: {
+        isPublic: true,
+      },
+      limit: 5,
+      order: [["createdAt", "DESC"]],
+      attributes: ["id", "title", "description", "tags",],
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["firstName", "lastName"],
+        },
+        {
+          model: Topic,
+          as: "topic",
+          attributes: ["name"],
+        }
+      ],
+    });
+
+    return forms;
+
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 
@@ -266,4 +295,5 @@ module.exports = {
   likeForm,
   unlikeForm,
   commentForm,
+  getLastFivePublicForms,
 };
