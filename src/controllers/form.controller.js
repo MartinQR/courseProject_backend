@@ -262,12 +262,12 @@ const getLastFivePublicForms = async () => {
       },
       limit: 5,
       order: [["createdAt", "DESC"]],
-      attributes: ["id", "title", "description", "tags",],
+      attributes: ["id", "title", "description",],
       include: [
         {
           model: User,
           as: "user",
-          attributes: ["firstName", "lastName"],
+          attributes: ["id", "email"],
         },
         {
           model: Topic,
