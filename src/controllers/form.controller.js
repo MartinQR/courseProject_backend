@@ -7,15 +7,17 @@ const {
   Like,
   User,
   Topic,
+  Answer,
+  FormResponse,
 } = sequelize.models;
 const tagController = require("./tag.controller");
 const commentController = require("./comment.controller");
+const { where } = require("sequelize");
 
 const createForm = async ({
   title,
   description,
   topicId,
-  collaboratorIds = [],
   tags = [],
   inputsData,
   userId,
@@ -29,11 +31,11 @@ const createForm = async ({
     }
 
     const response = await sequelize.transaction(async (transaction) => {
+      await Form.sync();
       const form = await Form.create({
         title,
         description,
         topicId,
-        collaboratorIds,
         tags,
         isPublic,
         allowedUsers,
@@ -85,7 +87,7 @@ const getFormById = async (id) => {
         },
         {
           model: User,
-          as: "user",
+          as: "creator",
           attributes: ["firstName", "lastName", "email"],
         },
         {
@@ -266,7 +268,7 @@ const getLastFivePublicForms = async () => {
       include: [
         {
           model: User,
-          as: "user",
+          as: "creator",
           attributes: ["id", "email"],
         },
         {
@@ -282,7 +284,86 @@ const getLastFivePublicForms = async () => {
   } catch (error) {
     throw error;
   }
+};
+
+const getFilledOutFormByUserId = async ({ formId, userId }) => {
+  try {
+    const formResponse = await FormResponse.findOne({
+      where: {
+        formId,
+        userId,
+      },
+    });
+
+    if (!formResponse) {
+      throw new Error("Form not found");
+    }
+
+    const form = await getFormById(formId);
+
+    const inputAnswers = await Answer.findAll({
+      where: {
+        formId,
+        userId,
+      },
+      attributes: ["inputId", "value"],
+    });
+
+    const formInputs = form.inputs.map(input => ({
+      ...input.toJSON(),
+      answer: inputAnswers.find(answer => answer.inputId === input.id)?.value,
+    }));
+
+    const formWithAnswers = {
+      ...form.toJSON(),
+      inputs: formInputs,
+    };
+
+    return formWithAnswers;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllFilledOutFormsByUserId = async (userId) => {
+  try {
+    const formResponses = await FormResponse.findAll({
+      where: {
+        userId,
+      },
+      attributes: ["formId"],
+    });
+
+
+    const formIds = formResponses.map(response => response.formId);
+
+    const forms = await Form.findAll({
+      where: {
+        id: formIds,
+      },
+      attributes: ["id", "title", "description", "createdAt"],
+      include: [
+        {
+          model: User,
+          as: "creator",
+          attributes: ["firstName", "lastName", "email"],
+        },
+        {
+          model: Topic,
+          as: "topic",
+          attributes: ["name"],
+        }
+      ],
+    });
+
+    return forms || [];
+
+  } catch (error) {
+    throw error;
+  }
 }
+
 
 
 
@@ -296,4 +377,6 @@ module.exports = {
   unlikeForm,
   commentForm,
   getLastFivePublicForms,
+  getFilledOutFormByUserId,
+  getAllFilledOutFormsByUserId,
 };

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const formController = require("../controllers/form.controller");
+const formResponseController = require("../controllers/formResponse.controller");
 
 router.post("/create", async (req, res) => {
   try {
@@ -99,6 +100,42 @@ router.post("/commentForm", async (req, res) => {
 router.get("/getLastFivePublicForms", async (req, res) => {
   try {
     const forms = await formController.getLastFivePublicForms();
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.post("/filloutForm", async (req, res) => {
+  try {
+    const { userId, formId, answers } = req.body;
+    const response = await formResponseController.filloutForm({ userId, formId, answers });
+
+    return res.json(response);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/getFilledOutFormByUserId", async (req, res) => {
+  try {
+    const { userId, formId } = req.query;
+    const forms = await formController.getFilledOutFormByUserId({ userId, formId });
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/getAllFilledOutFormsByUserId", async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const forms = await formController.getAllFilledOutFormsByUserId(userId);
 
     return res.json(forms);
 

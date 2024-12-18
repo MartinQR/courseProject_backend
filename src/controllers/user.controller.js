@@ -58,15 +58,14 @@ const loginUser = async ({ email, password }) => {
       throw new Error("Invalid email or password");
     }
 
-    // Exclude password, createdAt and updatedAt from the returned user object
-    const {
-      password: _,
-      createdAt,
-      updatedAt,
-      ...userWithoutPassword
-    } = user.toJSON();
-
-    return userWithoutPassword;
+    return {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      isBlocked: user.isBlocked,
+      userId: user.id,
+    };
 
   } catch (error) {
     throw error;
@@ -87,9 +86,9 @@ const deleteUser = async ({ adminId, usersId }) => {
         throw new Error(`User with id ${userId} not found`);
       }
 
-      if (user.isAdmin && user.id !== adminId) {
-        throw new Error(`You cannot delete an admin ${user.email}`);
-      }
+      // if (user.isAdmin && user.id !== adminId) {
+      //   throw new Error(`You cannot delete an admin ${user.email}`);
+      // }
 
       await user.destroy();
     }
@@ -123,9 +122,9 @@ const updateAdminStatus = async ({ adminId, usersId, action }) => {
         throw new Error(`User with id ${userId} not found`);
       }
 
-      if (user.isAdmin && user.id !== adminId) {
-        throw new Error(`You cannot update an admin ${user.email}`);
-      }
+      // if (user.isAdmin && user.id !== adminId) {
+      //   throw new Error(`You cannot update an admin ${user.email}`);
+      // }
 
       await user.update({ isAdmin });
     }
@@ -158,9 +157,9 @@ const updateBlockedStatus = async ({ adminId, usersId, action }) => {
         throw new Error(`User with id ${userId} not found`);
       }
 
-      if (user.isAdmin && user.id !== adminId) {
-        throw new Error(`You cannot block an admin ${user.email}`);
-      }
+      // if (user.isAdmin && user.id !== adminId) {
+      //   throw new Error(`You cannot block an admin ${user.email}`);
+      // }
 
       await user.update({ isBlocked });
     }

@@ -19,9 +19,6 @@ module.exports = (sequelize) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    collaboratorIds: {
-      type: DataTypes.JSON,
-    },
     tags: {
       type: DataTypes.JSON,
     },

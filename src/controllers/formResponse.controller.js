@@ -1,5 +1,5 @@
 const sequelize = require("../db");
-const { FormResponse, Form, User, Answers } = sequelize.models;
+const { FormResponse, Form, User, Answer } = sequelize.models;
 
 
 const createFormResponse = async ({
@@ -27,7 +27,7 @@ const createFormResponse = async ({
 };
 
 
-const completeForm = async (formId, userId, answers) => {
+const filloutForm = async ({ formId, userId, answers }) => {
   try {
     const response = await sequelize.transaction(async (transaction) => {
       await FormResponse.sync();
@@ -42,8 +42,8 @@ const completeForm = async (formId, userId, answers) => {
         formId,
       }));
 
-      await Answers.sync();
-      const answersCreated = await Answers.bulkCreate(answersToBulkCreate, { transaction });
+      await Answer.sync();
+      const answersCreated = await Answer.bulkCreate(answersToBulkCreate, { transaction });
 
       return answersCreated;
     });
@@ -59,5 +59,5 @@ const completeForm = async (formId, userId, answers) => {
 
 module.exports = {
   createFormResponse,
-  completeForm,
+  filloutForm,
 };
