@@ -74,6 +74,61 @@ const createForm = async ({
   }
 };
 
+const updateForm = async ({ formId, inputsData, userId }) => {
+  try {
+    const form = await Form.findByPk(formId);
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
+    const user = await User.findByPk(userId);
+
+    if (form.userId !== userId || !user.isAdmin) {
+      throw new Error("You are not authorized to update this form");
+    }
+
+    const existingFormResponses = await FormResponse.findAll({
+      where: {
+        formId,
+      },
+    });
+
+    if (existingFormResponses.length) {
+      throw new Error("Form has responses, cannot update");
+    }
+
+    const response = await sequelize.transaction(async (transaction) => {
+      await Input.sync();
+      await Input.destroy({
+        where: {
+          formId,
+        },
+        transaction,
+      });
+
+      if (inputsData?.length) {
+        const inputs = inputsData?.map(input => ({
+          ...input,
+          values: input.options,
+          display: input.displayed,
+          userId,
+          formId,
+        }));
+
+        await Input.bulkCreate(inputs, { transaction });
+      }
+
+      return { message: "Form updated successfully" };
+    });
+
+    return response;
+
+  } catch (error) {
+    throw error;
+
+  }
+};
+
 const getFormById = async (id) => {
   try {
     const form = await Form.findByPk(id, {
