@@ -132,17 +132,6 @@ router.get("/getFilledOutFormByUserId", async (req, res) => {
   }
 });
 
-router.get("/getAllFilledOutFormsByUserId", async (req, res) => {
-  try {
-    const userId = req.query.userId;
-    const forms = await formController.getAllFilledOutFormsByUserId(userId);
-
-    return res.json(forms);
-
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
 
 
 

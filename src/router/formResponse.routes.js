@@ -14,5 +14,17 @@ router.get("/getAllFilledOutFormsByFormId", async (req, res) => {
   }
 });
 
+router.get("/getAllFilledOutFormsByUserId", async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    const forms = await formResponseController.getAllFilledOutFormsByUserId(userId);
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;

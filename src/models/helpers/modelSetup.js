@@ -32,7 +32,7 @@ const modelSetup = (sequelize) => {
   Input.hasMany(Answer, { foreignKey: 'inputId' });
 
   FormResponse.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-  FormResponse.belongsTo(Form, { foreignKey: 'formId' });
+  FormResponse.belongsTo(Form, { foreignKey: 'formId', as: 'form' });
 
   Answer.belongsTo(User, { foreignKey: 'userId' });
   Answer.belongsTo(Form, { foreignKey: 'formId' });

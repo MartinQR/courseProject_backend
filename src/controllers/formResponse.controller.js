@@ -62,7 +62,7 @@ const getAllFilledOutFormsByFormId = async (formId) => {
       where: {
         formId,
       },
-      attributes: ["id", "createdAt"],
+      attributes: ["formId", "createdAt"],
       include: [
         {
           model: User,
@@ -81,10 +81,44 @@ const getAllFilledOutFormsByFormId = async (formId) => {
 
 };
 
+const getAllFilledOutFormsByUserId = async (userId) => {
+  console.log("netraaa");
+
+  try {
+    const formResponses = await FormResponse.findAll({
+      where: {
+        userId,
+      },
+      attributes: ["id", "createdAt"],
+      include: [
+        {
+          model: Form,
+          as: "form",
+          attributes: ["id", "title", "description",],
+          include: [
+            {
+              model: User,
+              as: "creator",
+              attributes: ["id", "email", "firstName", "lastName"],
+            },
+          ],
+        },
+      ],
+    });
+
+
+    return formResponses;
+  } catch (error) {
+    throw error;
+
+  }
+};
+
 
 
 module.exports = {
   createFormResponse,
   filloutForm,
   getAllFilledOutFormsByFormId,
+  getAllFilledOutFormsByUserId,
 };

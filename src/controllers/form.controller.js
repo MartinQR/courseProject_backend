@@ -326,44 +326,6 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
   }
 };
 
-const getAllFilledOutFormsByUserId = async (userId) => {
-  try {
-    const formResponses = await FormResponse.findAll({
-      where: {
-        userId,
-      },
-      attributes: ["formId"],
-    });
-
-
-    const formIds = formResponses.map(response => response.formId);
-
-    const forms = await Form.findAll({
-      where: {
-        id: formIds,
-      },
-      attributes: ["id", "title", "description", "createdAt"],
-      include: [
-        {
-          model: User,
-          as: "creator",
-          attributes: ["firstName", "lastName", "email"],
-        },
-        {
-          model: Topic,
-          as: "topic",
-          attributes: ["name"],
-        }
-      ],
-    });
-
-    return forms || [];
-
-  } catch (error) {
-    throw error;
-  }
-};
-
 
 
 
@@ -378,5 +340,4 @@ module.exports = {
   commentForm,
   getLastFivePublicForms,
   getFilledOutFormByUserId,
-  getAllFilledOutFormsByUserId,
 };
