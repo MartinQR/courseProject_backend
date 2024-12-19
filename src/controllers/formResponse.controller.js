@@ -55,9 +55,36 @@ const filloutForm = async ({ formId, userId, answers }) => {
   }
 };
 
+const getAllFilledOutFormsByFormId = async (formId) => {
+
+  try {
+    const formResponses = await FormResponse.findAll({
+      where: {
+        formId,
+      },
+      attributes: ["id", "createdAt"],
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "email", "firstName", "lastName"],
+        },
+      ],
+    });
+
+
+    return formResponses;
+  } catch (error) {
+    throw error;
+
+  }
+
+};
+
 
 
 module.exports = {
   createFormResponse,
   filloutForm,
+  getAllFilledOutFormsByFormId,
 };

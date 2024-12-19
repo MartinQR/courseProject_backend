@@ -12,7 +12,7 @@ const {
 } = sequelize.models;
 const tagController = require("./tag.controller");
 const commentController = require("./comment.controller");
-const { where } = require("sequelize");
+
 
 const createForm = async ({
   title,
@@ -362,7 +362,7 @@ const getAllFilledOutFormsByUserId = async (userId) => {
   } catch (error) {
     throw error;
   }
-}
+};
 
 
 
