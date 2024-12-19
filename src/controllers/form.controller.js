@@ -83,7 +83,7 @@ const updateForm = async ({ formId, inputsData, userId }) => {
     }
     const user = await User.findByPk(userId);
 
-    if (form.userId !== userId || !user.isAdmin) {
+    if (form.userId !== userId && !user.isAdmin) {
       throw new Error("You are not authorized to update this form");
     }
 
