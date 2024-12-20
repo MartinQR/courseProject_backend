@@ -13,6 +13,18 @@ router.post("/create", async (req, res) => {
   }
 });
 
+
+router.post("/update", async (req, res) => {
+  try {
+    const form = await formController.updateForm(req.body);
+
+    return res.json(form);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.get("/getFormById", async (req, res) => {
   try {
     const formId = req.query.id;

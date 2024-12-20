@@ -386,6 +386,7 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
 
 module.exports = {
   createForm,
+  updateForm,
   getFormById,
   getFormsByUserId,
   getFormComments,
