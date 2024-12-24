@@ -181,10 +181,19 @@ const getFormsByUserId = async (userId) => {
 
 const getFormComments = async (formId) => {
   try {
+    await Comment.sync();
     const comments = await Comment.findAll({
       where: {
         formId,
       },
+      attributes: ["id", "content", "createdAt"],
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["firstName", "lastName", "email"],
+        },
+      ],
     });
 
     return comments;
@@ -280,7 +289,7 @@ const unlikeForm = async (formId, userId) => {
   }
 };
 
-const commentForm = async (formId, userId, content) => {
+const commentForm = async ({ formId, userId, content }) => {
   try {
     const form = await Form.findByPk(formId);
 
@@ -381,6 +390,35 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
   }
 };
 
+const searchForms = async ({ query }) => {
+  try {
+    const forms = await Form.findAll({
+      where: {
+        title: {
+          [sequelize.Op.like]: `%${query}%`,
+        },
+      },
+      attributes: ["id", "title", "description", "createdAt",],
+      include: [
+        {
+          model: User,
+          as: "creator",
+          attributes: ["firstName", "lastName", "email"],
+        },
+        {
+          model: Topic,
+          as: "topic",
+          attributes: ["name"],
+        }
+      ],
+    });
+
+    return forms;
+
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 
@@ -396,4 +434,5 @@ module.exports = {
   commentForm,
   getLastFivePublicForms,
   getFilledOutFormByUserId,
+  searchForms,
 };

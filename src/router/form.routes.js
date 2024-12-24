@@ -13,7 +13,6 @@ router.post("/create", async (req, res) => {
   }
 });
 
-
 router.post("/update", async (req, res) => {
   try {
     const form = await formController.updateForm(req.body);
@@ -51,7 +50,7 @@ router.get("/getFormsByUserId", async (req, res) => {
 
 router.get("/getFormComments", async (req, res) => {
   try {
-    const formId = req.body.formId;
+    const formId = req.query.formId;
     const comments = await formController.getFormComments(formId);
 
     return res.json(comments);
@@ -144,6 +143,17 @@ router.get("/getFilledOutFormByUserId", async (req, res) => {
   }
 });
 
+router.get("/searchForms", async (req, res) => {
+  try {
+    const { query } = req.query;
+    const forms = await formController.searchForms(query);
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 
 

@@ -38,7 +38,7 @@ const modelSetup = (sequelize) => {
   Answer.belongsTo(Form, { foreignKey: 'formId' });
   Answer.belongsTo(Input, { foreignKey: 'inputId' });
 
-  Comment.belongsTo(User, { foreignKey: 'userId' });
+  Comment.belongsTo(User, { foreignKey: 'userId', as: 'user' });
   Comment.belongsTo(Form, { foreignKey: 'formId' });
 
   Like.belongsTo(User, { foreignKey: 'userId' });
