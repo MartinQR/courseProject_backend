@@ -381,6 +381,10 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
       throw new Error("Form not found");
     }
 
+    const user = await User.findByPk(userId, {
+      attributes: ["firstName", "lastName", "email"],
+    });
+
     const form = await getFormById(formId);
 
     const inputAnswers = await Answer.findAll({
@@ -399,6 +403,7 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
     const formWithAnswers = {
       ...form.toJSON(),
       inputs: formInputs,
+      user: user.toJSON(),
     };
 
     return formWithAnswers;

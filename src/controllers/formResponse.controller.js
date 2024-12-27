@@ -82,7 +82,6 @@ const getAllFilledOutFormsByFormId = async (formId) => {
 };
 
 const getAllFilledOutFormsByUserId = async (userId) => {
-  console.log("netraaa");
 
   try {
     const formResponses = await FormResponse.findAll({
