@@ -62,7 +62,7 @@ router.get("/getFormComments", async (req, res) => {
 
 router.get("/getFormLikesCount", async (req, res) => {
   try {
-    const formId = req.body.formId;
+    const formId = req.query.formId;
     const likesCount = await formController.getFormLikesCount(formId);
 
     return res.json(likesCount);
@@ -88,6 +88,30 @@ router.post("/unlikeForm", async (req, res) => {
   try {
     const { userId, formId } = req.body;
     const like = await formController.unlikeForm({ userId, formId });
+
+    return res.json(like);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/getFormsByTopicId", async (req, res) => {
+  try {
+    const topicId = req.query.topicId;
+    const forms = await formController.getFormsByTopicId(topicId);
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/hasUserLikedForm", async (req, res) => {
+  try {
+    const { userId, formId } = req.query;
+    const like = await formController.hasUserLikedForm({ userId, formId });
 
     return res.json(like);
 

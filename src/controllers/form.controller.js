@@ -205,6 +205,7 @@ const getFormComments = async (formId) => {
 
 const getFormLikesCount = async (formId) => {
   try {
+    await Like.sync();
     const likes = await Like.count({
       where: {
         formId,
@@ -218,7 +219,7 @@ const getFormLikesCount = async (formId) => {
   }
 };
 
-const likeForm = async (formId, userId) => {
+const likeForm = async ({ formId, userId }) => {
   try {
     const form = await Form.findByPk(formId);
 
@@ -231,6 +232,8 @@ const likeForm = async (formId, userId) => {
     if (!user) {
       throw new Error("User not found");
     }
+
+    await Like.sync();
 
     const existingLike = await Like.findOne({
       where: {
@@ -255,7 +258,7 @@ const likeForm = async (formId, userId) => {
   }
 };
 
-const unlikeForm = async (formId, userId) => {
+const unlikeForm = async ({ formId, userId }) => {
   try {
     const form = await Form.findByPk(formId);
 
@@ -284,6 +287,21 @@ const unlikeForm = async (formId, userId) => {
 
     return { message: "Form unliked successfully" };
 
+  } catch (error) {
+    throw error;
+  }
+};
+
+const hasUserLikedForm = async ({ formId, userId }) => {
+  try {
+    const existingLike = await Like.findOne({
+      where: {
+        formId,
+        userId,
+      },
+    });
+
+    return Boolean(existingLike);
   } catch (error) {
     throw error;
   }
@@ -435,4 +453,5 @@ module.exports = {
   getLastFivePublicForms,
   getFilledOutFormByUserId,
   searchForms,
+  hasUserLikedForm,
 };
