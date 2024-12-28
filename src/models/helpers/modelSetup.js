@@ -24,7 +24,7 @@ const modelSetup = (sequelize) => {
   Form.hasMany(Input, { foreignKey: 'formId', as: 'inputs' });
   Form.hasMany(Answer, { foreignKey: 'formId' });
   Form.hasMany(FormResponse, { foreignKey: 'formId' });
-  Form.hasMany(Comment, { foreignKey: 'formId' });
+  Form.hasMany(Comment, { foreignKey: 'formId', as: 'comments' });
   Form.hasMany(Like, { foreignKey: 'formId' });
 
   Input.belongsTo(Form, { foreignKey: 'formId' });

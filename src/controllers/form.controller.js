@@ -10,6 +10,7 @@ const {
   Answer,
   FormResponse,
 } = sequelize.models;
+const { Op } = require("sequelize");
 const tagController = require("./tag.controller");
 const commentController = require("./comment.controller");
 
@@ -413,26 +414,46 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
   }
 };
 
-const searchForms = async ({ query }) => {
+const searchForms = async (query) => {
   try {
     const forms = await Form.findAll({
       where: {
-        title: {
-          [sequelize.Op.like]: `%${query}%`,
-        },
+        [Op.or]: [
+          { title: { [Op.like]: `%${query}%` } },
+          { description: { [Op.like]: `%${query}%` } },
+          sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.col('tags'), JSON.stringify(query)), true),
+          { '$topic.name$': { [Op.like]: `%${query}%` } },
+          { '$inputs.title$': { [Op.like]: `%${query}%` } },
+          { '$inputs.description$': { [Op.like]: `%${query}%` } },
+          { '$comments.content$': { [Op.like]: `%${query}%` } },
+        ],
       },
-      attributes: ["id", "title", "description", "createdAt",],
+      attributes: ["id", "title", "description", "createdAt", "tags"],
       include: [
         {
           model: User,
           as: "creator",
-          attributes: ["firstName", "lastName", "email"],
+          attributes: [],
+          required: false,
         },
         {
           model: Topic,
           as: "topic",
-          attributes: ["name"],
-        }
+          attributes: [],
+          required: false,
+        },
+        {
+          model: Input,
+          as: "inputs",
+          attributes: [],
+          required: false,
+        },
+        {
+          model: Comment,
+          as: "comments",
+          attributes: [],
+          required: false,
+        },
       ],
     });
 
@@ -443,7 +464,54 @@ const searchForms = async ({ query }) => {
   }
 };
 
+const updateFilledOutForm = async ({ formId, userId, inputs }) => {
+  try {
+    const form = await Form.findByPk(formId);
 
+    if (!form) {
+      throw new Error("Form not found");
+    }
+
+    const formResponse = await FormResponse.findOne({
+      where: {
+        formId,
+        userId,
+      },
+    });
+
+    if (!formResponse) {
+      throw new Error("Form not found");
+    }
+
+    const response = await sequelize.transaction(async (transaction) => {
+      for (const input of inputs) {
+        const [answer, created] = await Answer.findOrCreate({
+          where: {
+            formId,
+            userId,
+            inputId: input.id,
+          },
+          defaults: {
+            value: input.answer,
+          },
+          transaction,
+        });
+
+        if (!created) {
+          await answer.update({ value: input.answer }, { transaction });
+        }
+      }
+
+      return { message: "Form updated successfully" };
+    });
+
+    return response;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
 
 module.exports = {
   createForm,
@@ -459,4 +527,5 @@ module.exports = {
   getFilledOutFormByUserId,
   searchForms,
   hasUserLikedForm,
+  updateFilledOutForm,
 };

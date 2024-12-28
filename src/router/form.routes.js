@@ -179,6 +179,18 @@ router.get("/searchForms", async (req, res) => {
   }
 });
 
+router.post("/updateFilledOutForm", async (req, res) => {
+  try {
+    const { userId, formId, inputs } = req.body;
+    const response = await formController.updateFilledOutForm({ userId, formId, inputs });
+
+    return res.json(response);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 
 
 module.exports = router;
