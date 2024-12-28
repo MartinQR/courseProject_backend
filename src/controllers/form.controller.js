@@ -188,6 +188,7 @@ const getFormComments = async (formId) => {
         formId,
       },
       attributes: ["id", "content", "createdAt"],
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: User,
