@@ -143,6 +143,17 @@ router.get("/getLastFivePublicForms", async (req, res) => {
   }
 });
 
+router.get("/getMostRespondedForms", async (req, res) => {
+  try {
+    const forms = await formController.getMostRespondedForms();
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.post("/filloutForm", async (req, res) => {
   try {
     const { userId, formId, answers } = req.body;

@@ -370,6 +370,45 @@ const getLastFivePublicForms = async () => {
   }
 };
 
+const getMostRespondedForms = async () => {
+  try {
+    // Get the most repeated formIds
+    await FormResponse.sync();
+    const results = await FormResponse.findAll({
+      attributes: [
+        'formId',
+        [sequelize.fn('COUNT', sequelize.col('formId')), 'responseCount']
+      ],
+      group: ['formId'],
+      order: [[sequelize.literal('responseCount'), 'DESC']],
+      limit: 5,
+    });
+
+    if (!results.length) {
+      throw new Error('No form responses found');
+    }
+
+    const topFormIds = results.map(result => result.formId);
+
+    // Get the forms corresponding to the most repeated formIds
+    await Form.sync();
+    const forms = await Form.findAll({
+      where: {
+        id: topFormIds
+      },
+      attributes: ["id", "title", "description"],
+      // Order by the order of the most repeated formIds
+      order: [sequelize.literal(`FIELD(Form.id, '${topFormIds.join("','")}')`)],
+      limit: 5,
+    });
+
+    return forms;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getFilledOutFormByUserId = async ({ formId, userId }) => {
   try {
     const formResponse = await FormResponse.findOne({
@@ -551,6 +590,7 @@ module.exports = {
   unlikeForm,
   commentForm,
   getLastFivePublicForms,
+  getMostRespondedForms,
   getFilledOutFormByUserId,
   searchForms,
   hasUserLikedForm,
