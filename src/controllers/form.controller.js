@@ -416,11 +416,37 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
 
 const searchForms = async (query) => {
   try {
-    const forms = await Form.findAll({
+    let forms = [];
+
+    if (!query) {
+      forms = await Form.findAll({
+        attributes: ["id", "title", "description", "createdAt", "tags"],
+        limit: 10,
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: User,
+            as: "creator",
+            attributes: [],
+            required: false,
+          },
+          {
+            model: Topic,
+            as: "topic",
+            attributes: ["name"],
+            required: false,
+          },
+        ],
+      });
+
+      return forms;
+    }
+    forms = await Form.findAll({
       where: {
         [Op.or]: [
           { title: { [Op.like]: `%${query}%` } },
           { description: { [Op.like]: `%${query}%` } },
+          // look for tags in JSON array
           sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.col('tags'), JSON.stringify(query)), true),
           { '$topic.name$': { [Op.like]: `%${query}%` } },
           { '$inputs.title$': { [Op.like]: `%${query}%` } },
