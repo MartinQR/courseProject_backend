@@ -442,7 +442,7 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
     }
 
     const user = await User.findByPk(userId, {
-      attributes: ["firstName", "lastName", "email"],
+      attributes: ["id", "firstName", "lastName", "email"],
     });
 
     const form = await getFormById(formId);
@@ -569,7 +569,7 @@ const updateFilledOutForm = async ({ formId, userId, inputs }) => {
     }
 
     const response = await sequelize.transaction(async (transaction) => {
-      for (const input of inputs) {
+      for await (const input of inputs) {
         const [answer, created] = await Answer.findOrCreate({
           where: {
             formId,
