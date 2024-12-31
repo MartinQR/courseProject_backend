@@ -456,14 +456,14 @@ const getFilledOutFormByUserId = async ({ formId, userId }) => {
     });
 
     const formInputs = form.inputs.map(input => ({
-      ...input.toJSON(),
+      ...input,
       answer: inputAnswers.find(answer => answer.inputId === input.id)?.value,
     }));
 
     const formWithAnswers = {
-      ...form.toJSON(),
+      ...form,
       inputs: formInputs,
-      user: user.toJSON(),
+      user: user,
     };
 
     return formWithAnswers;
