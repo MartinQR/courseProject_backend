@@ -171,6 +171,7 @@ const getFormsByUserId = async (userId) => {
       where: {
         userId,
       },
+      order: [["createdAt", "DESC"]],
     });
 
     return forms;

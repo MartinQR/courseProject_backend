@@ -10,6 +10,17 @@ router.get('/getAll', async (req, res) => {
   }
 });
 
+router.get("/getAvailableUsersByQuery", async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    const users = await userController.getAvailableUsersByQuery(query);
+    res.json(users);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.post('/register', async (req, res) => {
   try {
     const user = await userController.createUser(req.body);

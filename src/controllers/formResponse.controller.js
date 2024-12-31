@@ -30,7 +30,28 @@ const createFormResponse = async ({
 const filloutForm = async ({ formId, userId, answers }) => {
   try {
     const response = await sequelize.transaction(async (transaction) => {
+      const form = await Form.findByPk(formId);
+      if (!form) {
+        throw new Error("Form not found");
+      }
+
+      if (!form.isPublic && !form?.allowedUsers?.includes(userId)) {
+        throw new Error("You are not allowed to fill out this form");
+      }
+
+
       await FormResponse.sync();
+      const existingFormResponses = await FormResponse.findAll({
+        where: {
+          formId,
+          userId,
+        },
+      });
+
+      if (existingFormResponses.length > 0) {
+        throw new Error("You have already filled out this form");
+      }
+
       const formResponse = await FormResponse.create({
         userId,
         formId,

@@ -1,11 +1,45 @@
 const sequelize = require("../db");
 const bcrypt = require("bcrypt");
+const { Op } = require("sequelize");
 const User = sequelize.models.User;
 
 
 const getAllUsers = async () => {
   try {
     const users = await User.findAll();
+    return users;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAvailableUsersByQuery = async (query) => {
+  try {
+
+    let users = [];
+    if (!query) {
+      users = await User.findAll({
+        where: { isBlocked: false },
+        limit: 20,
+        attributes: ["id", "firstName", "lastName", "email"],
+      });
+
+    } else {
+      users = await User.findAll({
+        where: {
+          isBlocked: false,
+          [Op.or]: [
+            { firstName: { [Op.like]: `%${query}%` } },
+            { lastName: { [Op.like]: `%${query}%` } },
+            { email: { [Op.like]: `%${query}%` } },
+          ],
+        },
+        attributes: ["id", "firstName", "lastName", "email"],
+      });
+    }
+
+
     return users;
 
   } catch (error) {
@@ -173,6 +207,7 @@ const updateBlockedStatus = async ({ adminId, usersId, action }) => {
 
 module.exports = {
   createUser,
+  getAvailableUsersByQuery,
   loginUser,
   getAllUsers,
   deleteUser,
