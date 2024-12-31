@@ -75,7 +75,7 @@ const createForm = async ({
   }
 };
 
-const updateForm = async ({ formId, inputsData, userId }) => {
+const updateForm = async ({ formId, inputsData, allowedUsers, userId }) => {
   try {
     const form = await Form.findByPk(formId);
 
@@ -106,6 +106,9 @@ const updateForm = async ({ formId, inputsData, userId }) => {
         },
         transaction,
       });
+
+      form.allowedUsers = allowedUsers;
+      await form.save({ transaction });
 
       if (inputsData?.length) {
         const inputs = inputsData?.map(input => ({
@@ -157,7 +160,22 @@ const getFormById = async (id) => {
       },
     });
 
-    return form;
+    let allowedUsers = [];
+    if (form?.allowedUsers?.length) {
+
+      allowedUsers = await User.findAll({
+        where: {
+          id: form.allowedUsers
+        },
+        attributes: ["id", "email", "firstName", "lastName"],
+      });
+
+    }
+
+    return {
+      ...form.toJSON(),
+      allowedUsers
+    };
 
   } catch (error) {
     throw error;
