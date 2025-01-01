@@ -32,5 +32,12 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    userSettings: {
+      type: DataTypes.JSON,
+      defaultValue: {
+        theme: true,
+        language: true,
+      },
+    },
   });
 };

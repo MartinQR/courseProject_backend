@@ -99,6 +99,7 @@ const loginUser = async ({ email, password }) => {
       isAdmin: user.isAdmin,
       isBlocked: user.isBlocked,
       userId: user.id,
+      userSettings: user.userSettings,
     };
 
   } catch (error) {
@@ -205,6 +206,29 @@ const updateBlockedStatus = async ({ adminId, usersId, action }) => {
   }
 };
 
+const updateUserSettings = async ({ userId, theme, language }) => {
+  try {
+    await User.sync();
+    const user = await User.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await user.update({
+      userSettings: {
+        theme,
+        language,
+      }
+    });
+    return { message: "User updated successfully" };
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 module.exports = {
   createUser,
   getAvailableUsersByQuery,
@@ -213,4 +237,5 @@ module.exports = {
   deleteUser,
   updateAdminStatus,
   updateBlockedStatus,
+  updateUserSettings,
 };

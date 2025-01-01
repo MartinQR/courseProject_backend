@@ -75,4 +75,13 @@ router.post('/updateBlockedStatus', async (req, res) => {
   }
 });
 
+router.post("/updateUserSettings", async (req, res) => {
+  try {
+    const user = await userController.updateUserSettings(req.body);
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = router;
