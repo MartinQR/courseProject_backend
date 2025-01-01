@@ -143,6 +143,7 @@ const getFormById = async (id) => {
           attributes: {
             exclude: ["formId", "createdAt", "updatedAt", "userId"],
           },
+          // order: [["dragIndex", "ASC"]],
         },
         {
           model: User,
@@ -160,6 +161,8 @@ const getFormById = async (id) => {
       },
     });
 
+    const inputs = form.inputs.map(input => input.toJSON())?.sort((a, b) => a.dragIndex - b.dragIndex);
+
     let allowedUsers = [];
     if (form?.allowedUsers?.length) {
 
@@ -174,6 +177,7 @@ const getFormById = async (id) => {
 
     return {
       ...form.toJSON(),
+      inputs,
       allowedUsers
     };
 
