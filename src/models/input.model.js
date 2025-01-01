@@ -45,10 +45,10 @@ module.exports = (sequelize) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    // dragIndex: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   defaultValue: 0,
-    // },
+    dragIndex: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   });
 };
