@@ -190,6 +190,18 @@ router.get("/searchForms", async (req, res) => {
   }
 });
 
+router.get("/getFormsByTag", async (req, res) => {
+  try {
+    const { tag } = req.query;
+    const forms = await formController.getFormsByTag(tag);
+
+    return res.json(forms);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.post("/updateFilledOutForm", async (req, res) => {
   try {
     const { userId, formId, inputs } = req.body;

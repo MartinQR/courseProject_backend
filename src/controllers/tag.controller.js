@@ -4,7 +4,9 @@ const { User, Tag } = sequelize.models;
 
 const getAllTags = async () => {
   try {
-    const tags = await Tag.findAll();
+    const tags = await Tag.findAll({
+      attributes: ["id", 'name'],
+    });
     return tags;
 
   } catch (error) {

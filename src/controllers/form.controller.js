@@ -549,6 +549,36 @@ const searchForms = async (query) => {
   }
 };
 
+const getFormsByTag = async (tag) => {
+  try {
+    const forms = await Form.findAll({
+      where: {
+        [Op.or]: [
+          sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.col('tags'), JSON.stringify(tag)), true),
+        ],
+      },
+      attributes: ["id", "title", "description", "createdAt", "tags"],
+      include: [
+        {
+          model: User,
+          as: "creator",
+          attributes: ["id", "email"],
+        },
+        {
+          model: Topic,
+          as: "topic",
+          attributes: ["name"],
+        }
+      ],
+    });
+
+    return forms;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 const updateFilledOutForm = async ({ formId, userId, inputs }) => {
   try {
     const form = await Form.findByPk(formId);
@@ -612,6 +642,7 @@ module.exports = {
   getMostRespondedForms,
   getFilledOutFormByUserId,
   searchForms,
+  getFormsByTag,
   hasUserLikedForm,
   updateFilledOutForm,
 };
