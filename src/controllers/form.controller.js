@@ -111,13 +111,16 @@ const updateForm = async ({ formId, inputsData, allowedUsers, userId }) => {
       await form.save({ transaction });
 
       if (inputsData?.length) {
-        const inputs = inputsData?.map(input => ({
+        const inputs = inputsData?.map(({ id, ...input }) => ({
           ...input,
           values: input.options,
           display: input.displayed,
           userId,
           formId,
         }));
+
+        console.log(inputsData);
+
 
         await Input.bulkCreate(inputs, { transaction });
       }
@@ -632,6 +635,72 @@ const updateFilledOutForm = async ({ formId, userId, inputs }) => {
   }
 };
 
+const deleteForm = async ({ formId, userId }) => {
+  try {
+    const form = await Form.findByPk(formId);
+
+    if (!form) {
+      throw new Error("Form not found");
+    }
+
+    const user = await User.findByPk(userId);
+
+    if (form.userId !== userId && !user.isAdmin) {
+      throw new Error("You are not authorized to delete this form");
+    }
+
+    await sequelize.transaction(async (transaction) => {
+      // delete all related data
+      await Answer.destroy({
+        where: {
+          formId,
+        },
+        transaction,
+      });
+
+      await FormResponse.destroy({
+        where: {
+          formId,
+        },
+        transaction,
+      });
+
+      await Comment.destroy({
+        where: {
+          formId,
+        },
+        transaction,
+      });
+
+      await Like.destroy({
+        where: {
+          formId,
+        },
+        transaction,
+      });
+
+      await Input.destroy({
+        where: {
+          formId,
+        },
+        transaction,
+      });
+
+      await Form.destroy({
+        where: {
+          id: formId,
+        },
+        transaction,
+      });
+    });
+
+    return { message: "Form deleted successfully" };
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createForm,
   updateForm,
@@ -649,4 +718,5 @@ module.exports = {
   getFormsByTag,
   hasUserLikedForm,
   updateFilledOutForm,
+  deleteForm,
 };

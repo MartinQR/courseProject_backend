@@ -215,5 +215,15 @@ router.post("/updateFilledOutForm", async (req, res) => {
 });
 
 
+router.post("/deleteForm", async (req, res) => {
+  try {
+    const response = await formController.deleteForm(req.body);
+
+    return res.json(response);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
 module.exports = router;
