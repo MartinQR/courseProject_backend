@@ -703,7 +703,6 @@ const deleteForm = async ({ formId, userId }) => {
 
 const getAggregatedResponsesByFormId = async (formId) => {
   try {
-    // Obtener todas las respuestas relacionadas con el formId
     const inputs = await Input.findAll({
       where: {
         formId,
@@ -762,9 +761,6 @@ const getAggregatedResponsesByFormId = async (formId) => {
     });
 
     return mostFrequentAnswers;
-
-    return answersMap
-    // return answers;
 
   } catch (error) {
     throw error;
