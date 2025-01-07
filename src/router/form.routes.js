@@ -226,4 +226,16 @@ router.post("/deleteForm", async (req, res) => {
   }
 });
 
+router.get("/getAggregatedResponsesByFormId", async (req, res) => {
+  try {
+    const formId = req.query.formId;
+    const responses = await formController.getAggregatedResponsesByFormId(formId);
+
+    return res.json(responses);
+
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = router;

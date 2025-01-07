@@ -10,6 +10,8 @@ const modelSetup = (sequelize) => {
     Like,
   } = sequelize.models;
 
+  //To relate the models
+
   User.hasMany(Form, { foreignKey: 'userId' });
   User.hasMany(Input, { foreignKey: 'userId' });
   User.hasMany(Answer, { foreignKey: 'userId' });
@@ -36,7 +38,7 @@ const modelSetup = (sequelize) => {
 
   Answer.belongsTo(User, { foreignKey: 'userId' });
   Answer.belongsTo(Form, { foreignKey: 'formId' });
-  Answer.belongsTo(Input, { foreignKey: 'inputId' });
+  Answer.belongsTo(Input, { foreignKey: 'inputId', as: 'input' });
 
   Comment.belongsTo(User, { foreignKey: 'userId', as: 'user' });
   Comment.belongsTo(Form, { foreignKey: 'formId' });

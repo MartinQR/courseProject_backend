@@ -701,6 +701,72 @@ const deleteForm = async ({ formId, userId }) => {
   }
 };
 
+const getAggregatedResponsesByFormId = async (formId) => {
+  try {
+    const inputs = await Input.findAll({
+      where: {
+        formId,
+      },
+      attributes: ["id", "type"],
+    });
+
+    const answers = await Answer.findAll({
+      where: {
+        formId,
+      },
+      attributes: ["id", "value"],
+      include: [
+        {
+          model: Input,
+          as: "input",
+          attributes: ["type", "id"],
+        },
+      ],
+    });
+
+    const answersMap = {};
+    answers.forEach(answer => {
+      const { input } = answer;
+
+      answer.value?.forEach((value) => {
+        answersMap[input.id] = {
+          ...answersMap[input.id],
+          [value]: (answersMap[input.id]?.[value] || 0) + 1,
+        }
+      });
+
+    });
+
+    const mostFrequentAnswers = {};
+    Object.keys(answersMap).forEach(inputId => {
+      const input = inputs.find(input => input.id === inputId);
+
+      let average = 0;
+
+      if (input.type === "INTEGER") {
+        const values = answersMap[inputId];
+        const sum = Object.keys(values).reduce((acc, key) => acc + Number(key) * values[key], 0);
+        const count = Object.values(values).reduce((a, b) => a + b);
+        average = sum / count;
+      }
+
+      const values = answersMap[inputId];
+      const mostFrequentValue = Object.keys(values).reduce((a, b) => values[a] > values[b] ? a : b);
+      mostFrequentAnswers[inputId] = {
+        mostFrequentValue,
+        type: input.type,
+        count: values[mostFrequentValue],
+        average,
+      };
+    });
+
+    return mostFrequentAnswers;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   createForm,
   updateForm,
@@ -719,4 +785,5 @@ module.exports = {
   hasUserLikedForm,
   updateFilledOutForm,
   deleteForm,
+  getAggregatedResponsesByFormId,
 };
