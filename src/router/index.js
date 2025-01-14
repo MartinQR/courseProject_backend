@@ -6,6 +6,7 @@ const formRoutes = require('./form.routes');
 const formResponseRoutes = require('./formResponse.routes');
 const topicRoutes = require('./topic.routes');
 const tagRoutes = require('./tag.routes.js');
+const salesforceRoutes = require('./salesforce.routes');
 
 router.use('/user', userRoutes);
 
@@ -16,5 +17,7 @@ router.use('/formResponse', formResponseRoutes);
 router.use('/topic', topicRoutes);
 
 router.use('/tag', tagRoutes);
+
+router.use('/salesforce', salesforceRoutes);
 
 module.exports = router;
