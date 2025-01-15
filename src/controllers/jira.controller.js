@@ -1,13 +1,11 @@
+// filepath: /c:/Users/LeviTC/Desktop/CourseProjectBack/src/controllers/jira.controller.js
 const axios = require("axios");
 
 const JIRA_API_KEY = process.env.JIRA_API_KEY;
-
-const PROJECT_KEY = "OPS"
-
-const userName = "quirozrmartin@gmail.com";
-const domain = "quirozrmartin";
-const jiraAcountIdAdmin = "712020:caba8595-2e94-4533-a588-90fff19210f1";
-
+const PROJECT_KEY = "OPS";
+const userName = process.env.JIRA_USERNAME;
+const domain = process.env.JIRA_DOMAIN;
+const jiraAcountIdAdmin = process.env.JIRA_ACCOUNT_ID_ADMIN;
 
 const createAccount = async (email) => {
   try {
@@ -101,10 +99,7 @@ const getUserAccountId = async (email) => {
   }
 };
 
-
 const getIssuesCreatedByUser = async (email) => {
-
-
   try {
     const url = `https://${domain}.atlassian.net/rest/api/3/search`;
     const accountId = await createAccount(email);
