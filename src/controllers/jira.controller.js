@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const JIRA_API_KEY = "ATATT3xFfGF0ZgetFrlW24SVUOfbhNUrnAY6XkFukuzPKRdNK9V0MyCiUe5eBWbTUuHpCJdmZH5OaQ7_Wo-Q4iOL3C3AfwJI4CAmdm8WHq92XgGkk-msXx-fqrpOhrnVv848qADcapGDld3gPLvZ9MjL8Ma1TwHfU6pgV790D37aN3SjaX06nqg=62A95B57";
+const JIRA_API_KEY = process.env.JIRA_API_KEY;
 
 const PROJECT_KEY = "OPS"
 
