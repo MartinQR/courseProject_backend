@@ -11,7 +11,9 @@ const createAccount = async (email) => {
   try {
     const bodyData = {
       emailAddress: email,
-      "products": [],
+      "products": [
+        "jira-software",
+      ],
       displayName: email,
     };
 
