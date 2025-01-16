@@ -8,6 +8,7 @@ const topicRoutes = require('./topic.routes');
 const tagRoutes = require('./tag.routes.js');
 const salesforceRoutes = require('./salesforce.routes');
 const jiraRoutes = require('./jira.routes');
+const odooRoutes = require('./odoo.routes');
 
 router.use('/user', userRoutes);
 
@@ -22,5 +23,7 @@ router.use('/tag', tagRoutes);
 router.use('/salesforce', salesforceRoutes);
 
 router.use('/jira', jiraRoutes);
+
+router.use('/odoo', odooRoutes);
 
 module.exports = router;
